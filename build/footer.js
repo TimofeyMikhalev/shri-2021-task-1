@@ -1,69 +1,42 @@
-let data;
+let urlParams = new URLSearchParams(window.location.search);
+let urlParams__slide = urlParams.get('slide');
+let urlParams__theme = urlParams.get('theme');
 
-let container = document.querySelector(".container");
+urlParams__slide = urlParams__slide === null ? false : parseInt(urlParams.get('slide'));
 
+if (urlParams__slide === false) {
+  urlParams__slide = 1;
 
+  urlParams.set("slide", urlParams__slide);
+  window.location.search = urlParams;
+}
+if (urlParams__theme === null) {
+  urlParams__theme = "dark";
 
-
-
-function readTextFile(file, callback) {
-  var rawFile = new XMLHttpRequest();
-  rawFile.overrideMimeType("application/json");
-  rawFile.open("GET", file, true);
-  rawFile.onreadystatechange = function () {
-    if (rawFile.readyState === 4 && rawFile.status == "200") {
-      callback(rawFile.responseText);
-    }
-  }
-  rawFile.send(null);
+  urlParams.set("theme", urlParams__theme);
+  window.location.search = urlParams;
 }
 
-//usage:
-readTextFile("data/data.json", function (text) {
-  data = JSON.parse(text);
+container.innerHTML = renderTemplate(data[urlParams__slide - 1].alias, data[urlParams__slide - 1].data);
+if(window.innerWidth < 650){
+  document.querySelectorAll(".item_desktop").forEach((item) => item.parentNode.removeChild(item));
+} else {
+  document.querySelectorAll(".item_mobile").forEach((item) => item.parentNode.removeChild(item));
 
+}
+if (urlParams__theme == "light") {
+  container.classList.add("theme_light");
+  container.classList.remove("theme_dark");
+  
+  document.querySelectorAll(".item_dark").forEach((item) => item.parentNode.removeChild(item));
 
-  let urlParams = new URLSearchParams(window.location.search);
-  let urlParams__slide = urlParams.get('slide');
-  let urlParams__theme = urlParams.get('theme');
+} else {
+  container.classList.add("theme_dark");
+  container.classList.remove("theme_light");
 
-  urlParams__slide = urlParams__slide === null ? false : parseInt(urlParams.get('slide'));
-
-  if (urlParams__slide === false) {
-    urlParams__slide = 1;
-
-    urlParams.set("slide", urlParams__slide);
-    window.location.search = urlParams;
-  }
-  if (urlParams__theme === null) {
-    urlParams__theme = "dark";
-
-    urlParams.set("theme", urlParams__theme);
-    window.location.search = urlParams;
-  }
-
-  container.innerHTML = renderTemplate(data[urlParams__slide - 1].alias, data[urlParams__slide - 1].data);
-  if(window.innerWidth < 650){
-    document.querySelectorAll(".item_desktop").forEach((item) => item.parentNode.removeChild(item));
-  } else {
-    document.querySelectorAll(".item_mobile").forEach((item) => item.parentNode.removeChild(item));
-
-  }
-  if (urlParams__theme == "light") {
-    container.classList.add("theme_light");
-    container.classList.remove("theme_dark");
-    
-    document.querySelectorAll(".item_dark").forEach((item) => item.parentNode.removeChild(item));
-
-  } else {
-    container.classList.add("theme_dark");
-    container.classList.remove("theme_light");
-
-    
-    document.querySelectorAll(".item_light").forEach((item) => item.parentNode.removeChild(item));
-  }
-});
-
+  
+  document.querySelectorAll(".item_light").forEach((item) => item.parentNode.removeChild(item));
+}
 
 
 window.renderTemplate = (selectedAlias, selectedData) => {
